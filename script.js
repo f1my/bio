@@ -236,8 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const bioMessages = [
-    "he/they
-     05/25",
+    "he/they 05/25",
     "\"Hello, World!\""
   ];
   let bioText = '';
