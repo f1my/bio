@@ -4,7 +4,7 @@ const audioFiles = [
   '14-system-music-daily-log-tv.ogg',
   '35-eshop-menu-track-10.ogg',
   '49-mii-maker-editing-a-mii-gamepad.ogg',
-  'same-smile-different-face-knower.ogg',
+  'same-smile-different-face-real-version-knower.ogg',
   'spark-the-bird-and-the-bee.ogg'
 ];
 
@@ -27,9 +27,6 @@ function playNextAudio() {
   const backgroundMusic = document.getElementById('background-music');
   backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
   backgroundMusic.load(); // Load the new audio source
-  backgroundMusic.play().catch(err => {
-    console.error("Failed to play next audio:", err);
-  });
   currentAudioIndex++;
 }
 
@@ -44,8 +41,8 @@ function initMedia() {
   backgroundMusic.volume = 0.3;
   backgroundVideo.muted = true;
 
-  shuffledAudioFiles = shuffleArray([...audioFiles]); // Initial shuffle
-  // Do NOT play audio here, wait for user interaction
+  // Initial shuffle, but do NOT play audio here, wait for user interaction
+  shuffledAudioFiles = shuffleArray([...audioFiles]);
 
   backgroundMusic.addEventListener('ended', playNextAudio);
 
@@ -172,18 +169,20 @@ document.addEventListener('DOMContentLoaded', () => {
     startScreen.classList.add('hidden');
     const backgroundMusic = document.getElementById('background-music');
     backgroundMusic.muted = false; // Ensure it's unmuted
-    
-    // Set src and load the first audio directly here for initial play
+
+    // Set src and load the first audio
     if (shuffledAudioFiles.length === 0) {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
     backgroundMusic.src = shuffledAudioFiles[0];
     backgroundMusic.load();
 
-    backgroundMusic.play().then(() => {
-        currentAudioIndex = 1; // First audio played, next will be index 1
-    }).catch(err => {
-      console.error("Failed to play initial music after start screen click:", err);
+    // Play only when enough data is buffered to play through
+    backgroundMusic.addEventListener('canplaythrough', function handler() {
+        backgroundMusic.play().catch(err => {
+            console.error("Failed to play initial music after canplaythrough:", err);
+        });
+        backgroundMusic.removeEventListener('canplaythrough', handler);
     });
 
     profileBlock.classList.remove('hidden');
@@ -204,17 +203,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const backgroundMusic = document.getElementById('background-music');
     backgroundMusic.muted = false; // Ensure it's unmuted
 
-    // Set src and load the first audio directly here for initial play
+    // Set src and load the first audio
     if (shuffledAudioFiles.length === 0) {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
     backgroundMusic.src = shuffledAudioFiles[0];
     backgroundMusic.load();
 
-    backgroundMusic.play().then(() => {
-        currentAudioIndex = 1; // First audio played, next will be index 1
-    }).catch(err => {
-      console.error("Failed to play initial music after start screen touch:", err);
+    // Play only when enough data is buffered to play through
+    backgroundMusic.addEventListener('canplaythrough', function handler() {
+        backgroundMusic.play().catch(err => {
+            console.error("Failed to play initial music after canplaythrough:", err);
+        });
+        backgroundMusic.removeEventListener('canplaythrough', handler);
     });
 
     profileBlock.classList.remove('hidden');
