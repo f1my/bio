@@ -170,11 +170,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   startScreen.addEventListener('click', () => {
     startScreen.classList.add('hidden');
-    backgroundMusic.muted = false;
-    backgroundMusic.play().catch(err => {
+    const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.muted = false; // Ensure it's unmuted
+    
+    // Set src and load the first audio directly here for initial play
+    if (shuffledAudioFiles.length === 0) {
+        shuffledAudioFiles = shuffleArray([...audioFiles]);
+    }
+    backgroundMusic.src = shuffledAudioFiles[0];
+    backgroundMusic.load();
+
+    backgroundMusic.play().then(() => {
+        currentAudioIndex = 1; // First audio played, next will be index 1
+    }).catch(err => {
       console.error("Failed to play initial music after start screen click:", err);
     });
-    playNextAudio(); // Start playing audio after user interaction
+
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
       { opacity: 0, y: -50 },
@@ -190,11 +201,22 @@ document.addEventListener('DOMContentLoaded', () => {
   startScreen.addEventListener('touchstart', (e) => {
     e.preventDefault();
     startScreen.classList.add('hidden');
-    backgroundMusic.muted = false;
-    backgroundMusic.play().catch(err => {
+    const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.muted = false; // Ensure it's unmuted
+
+    // Set src and load the first audio directly here for initial play
+    if (shuffledAudioFiles.length === 0) {
+        shuffledAudioFiles = shuffleArray([...audioFiles]);
+    }
+    backgroundMusic.src = shuffledAudioFiles[0];
+    backgroundMusic.load();
+
+    backgroundMusic.play().then(() => {
+        currentAudioIndex = 1; // First audio played, next will be index 1
+    }).catch(err => {
       console.error("Failed to play initial music after start screen touch:", err);
     });
-    playNextAudio(); // Start playing audio after user interaction
+
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
       { opacity: 0, y: -50 },
