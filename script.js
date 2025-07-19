@@ -1,11 +1,11 @@
 let hasUserInteracted = false;
 
 const audioFiles = [
-  'System Music - Daily Log (TV).mp3',
-  'eShop - Menu (Track 10).mp3',
-  'Mii Maker - Editing a Mii (Gamepad).mp3',
-  'spotidownloader.com - Same Smile, Different Face (real version) - KNOWER.mp3',
-  'spotidownloader.com - Spark - the bird and the bee.mp3'
+  'System Music - Daily Log (TV).ogg',
+  'eShop - Menu (Track 10).ogg',
+  'Mii Maker - Editing a Mii (Gamepad).ogg',
+  'spotidownloader.com - Same Smile, Different Face (real version) - KNOWER.ogg',
+  'spotidownloader.com - Spark - the bird and the bee.ogg'
 ];
 
 let shuffledAudioFiles = [];
