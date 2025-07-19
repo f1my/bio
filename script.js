@@ -99,11 +99,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   function initializeVisitorCounter() {
-    fetch('/api/counter')
-      .then(response => response.json())
-      .then(data => {
-        visitorCount.textContent = data.count.toLocaleString();
-      });
+    // First, increment the counter
+    fetch('/api/counter', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ slug: 'views' }), // Increment the 'views' slug
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(() => {
+      // After incrementing, fetch the updated count
+      return fetch('/api/counter?slug=views'); // Fetch the 'views' slug
+    })
+    .then(response => response.json())
+    .then(data => {
+      visitorCount.textContent = data.count.toLocaleString();
+    })
+    .catch(error => {
+      console.error('Error updating or fetching visitor count:', error);
+      visitorCount.textContent = 'Error'; // Display error if something goes wrong
+    });
   }
 
 
