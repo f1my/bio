@@ -170,22 +170,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const backgroundMusic = document.getElementById('background-music');
     backgroundMusic.muted = false; // Ensure it's unmuted
 
-    // Set src and load the first audio
+    // Set src and load the first audio directly
     if (shuffledAudioFiles.length === 0) {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
     backgroundMusic.src = shuffledAudioFiles[0];
     backgroundMusic.load();
 
-    // Play only when enough data is buffered to play through
-    backgroundMusic.addEventListener('canplaythrough', function handler() {
-        console.log('Audio canplaythrough event fired for click.');
-        backgroundMusic.play().then(() => {
-            console.log('Audio play() promise resolved successfully for click.');
-        }).catch(err => {
-            console.error("Failed to play initial music after canplaythrough (click):", err);
-        });
-        backgroundMusic.removeEventListener('canplaythrough', handler);
+    // Attempt to play immediately
+    backgroundMusic.play().then(() => {
+        console.log('Audio play() promise resolved successfully for click.');
+        currentAudioIndex = 1; // First audio played, next will be index 1
+    }).catch(err => {
+        console.error("Failed to play initial music (click):", err);
     });
 
     profileBlock.classList.remove('hidden');
@@ -206,22 +203,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const backgroundMusic = document.getElementById('background-music');
     backgroundMusic.muted = false; // Ensure it's unmuted
 
-    // Set src and load the first audio
+    // Set src and load the first audio directly
     if (shuffledAudioFiles.length === 0) {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
     backgroundMusic.src = shuffledAudioFiles[0];
     backgroundMusic.load();
 
-    // Play only when enough data is buffered to play through
-    backgroundMusic.addEventListener('canplaythrough', function handler() {
-        console.log('Audio canplaythrough event fired for touch.');
-        backgroundMusic.play().then(() => {
-            console.log('Audio play() promise resolved successfully for touch.');
-        }).catch(err => {
-            console.error("Failed to play initial music after canplaythrough (touch):", err);
-        });
-        backgroundMusic.removeEventListener('canplaythrough', handler);
+    // Attempt to play immediately
+    backgroundMusic.play().then(() => {
+        console.log('Audio play() promise resolved successfully for touch.');
+        currentAudioIndex = 1; // First audio played, next will be index 1
+    }).catch(err => {
+        console.error("Failed to play initial music (touch):", err);
     });
 
     profileBlock.classList.remove('hidden');
