@@ -26,6 +26,7 @@ function playNextAudio() {
   }
   const backgroundMusic = document.getElementById('background-music');
   backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
+  console.log('Attempting to load audio:', backgroundMusic.src);
   backgroundMusic.load(); // Load the new audio source
   backgroundMusic.play().catch(err => {
     console.error("Failed to play next audio:", err);
