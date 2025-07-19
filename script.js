@@ -26,6 +26,7 @@ function playNextAudio() {
   }
   const backgroundMusic = document.getElementById('background-music');
   backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
+  backgroundMusic.load(); // Load the new audio source
   backgroundMusic.play().catch(err => {
     console.error("Failed to play next audio:", err);
   });
@@ -44,7 +45,7 @@ function initMedia() {
   backgroundVideo.muted = true;
 
   shuffledAudioFiles = shuffleArray([...audioFiles]); // Initial shuffle
-  playNextAudio(); // Play the first random audio
+  // Do NOT play audio here, wait for user interaction
 
   backgroundMusic.addEventListener('ended', playNextAudio);
 
@@ -170,9 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   startScreen.addEventListener('click', () => {
     startScreen.classList.add('hidden');
     backgroundMusic.muted = false;
-    backgroundMusic.play().catch(err => {
-      console.error("Failed to play music after start screen click:", err);
-    });
+    playNextAudio(); // Start playing audio after user interaction
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
       { opacity: 0, y: -50 },
@@ -189,9 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     startScreen.classList.add('hidden');
     backgroundMusic.muted = false;
-    backgroundMusic.play().catch(err => {
-      console.error("Failed to play music after start screen touch:", err);
-    });
+    playNextAudio(); // Start playing audio after user interaction
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
       { opacity: 0, y: -50 },
