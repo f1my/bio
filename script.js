@@ -24,30 +24,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileBio = document.getElementById('profile-bio');
   const visitorCount = document.getElementById('visitor-count');
   const backgroundMusic = document.getElementById('background-music');
-  const hackerMusic = document.getElementById('hacker-music');
-  const rainMusic = document.getElementById('rain-music');
-  const animeMusic = document.getElementById('anime-music');
-  const carMusic = document.getElementById('car-music');
-  const homeButton = document.getElementById('home-theme');
-  const hackerButton = document.getElementById('hacker-theme');
-  const rainButton = document.getElementById('rain-theme');
-  const animeButton = document.getElementById('anime-theme');
-  const carButton = document.getElementById('car-theme');
-  const resultsButtonContainer = document.getElementById('results-button-container');
-  const resultsButton = document.getElementById('results-theme');
   const volumeIcon = document.getElementById('volume-icon');
   const volumeSlider = document.getElementById('volume-slider');
   const transparencySlider = document.getElementById('transparency-slider');
   const backgroundVideo = document.getElementById('background');
-  const hackerOverlay = document.getElementById('hacker-overlay');
-  const snowOverlay = document.getElementById('snow-overlay');
   const glitchOverlay = document.querySelector('.glitch-overlay');
   const profileBlock = document.getElementById('profile-block');
-  const skillsBlock = document.getElementById('skills-block');
-  const pythonBar = document.getElementById('python-bar');
-  const cppBar = document.getElementById('cpp-bar');
-  const csharpBar = document.getElementById('csharp-bar');
-  const resultsHint = document.getElementById('results-hint');
   const profilePicture = document.querySelector('.profile-picture');
   const profileContainer = document.querySelector('.profile-container');
   const socialIcons = document.querySelectorAll('.social-icon');
@@ -95,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 
-  const startMessage = "Click here to see the motion baby";
+  const startMessage = "click for peak";
   let startTextContent = '';
   let startIndex = 0;
   let startCursorVisible = true;
@@ -117,22 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   function initializeVisitorCounter() {
-    let totalVisitors = localStorage.getItem('totalVisitorCount');
-    if (!totalVisitors) {
-      totalVisitors = 921234;
-      localStorage.setItem('totalVisitorCount', totalVisitors);
-    } else {
-      totalVisitors = parseInt(totalVisitors);
-    }
-
-    const hasVisited = localStorage.getItem('hasVisited');
-    if (!hasVisited) {
-      totalVisitors++;
-      localStorage.setItem('totalVisitorCount', totalVisitors);
-      localStorage.setItem('hasVisited', 'true');
-    }
-
-    visitorCount.textContent = totalVisitors.toLocaleString();
+    fetch('/api/counter')
+      .then(response => response.json())
+      .then(data => {
+        visitorCount.textContent = data.count.toLocaleString();
+      });
   }
 
 
@@ -153,18 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
         profileContainer.classList.add('orbit');
       }}
     );
-    if (!isTouchDevice) {
-      try {
-        new cursorTrailEffect({
-          length: 10,
-          size: 8,
-          speed: 0.2
-        });
-        console.log("Cursor trail initialized");
-      } catch (err) {
-        console.error("Failed to initialize cursor trail effect:", err);
-      }
-    }
     typeWriterName();
     typeWriterBio();
   });
@@ -184,18 +143,6 @@ document.addEventListener('DOMContentLoaded', () => {
         profileContainer.classList.add('orbit');
       }}
     );
-    if (!isTouchDevice) {
-      try {
-        new cursorTrailEffect({
-          length: 10,
-          size: 8,
-          speed: 0.2
-        });
-        console.log("Cursor trail initialized");
-      } catch (err) {
-        console.error("Failed to initialize cursor trail effect:", err);
-      }
-    }
     typeWriterName();
     typeWriterBio();
   });
@@ -236,8 +183,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
   const bioMessages = [
-    "he/they 05/25",
-    "\"Hello, World!\""
+    "he/they",
+    "05/25"
   ];
   let bioText = '';
   let bioIndex = 0;
@@ -309,10 +256,6 @@ document.addEventListener('DOMContentLoaded', () => {
       profileBlock.style.borderOpacity = '0';
       profileBlock.style.borderColor = 'transparent';
       profileBlock.style.backdropFilter = 'none';
-      skillsBlock.style.background = 'rgba(0, 0, 0, 0)';
-      skillsBlock.style.borderOpacity = '0';
-      skillsBlock.style.borderColor = 'transparent';
-      skillsBlock.style.backdropFilter = 'none';
    
       profileBlock.style.pointerEvents = 'auto';
       socialIcons.forEach(icon => {
@@ -333,10 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
       profileBlock.style.borderOpacity = opacity;
       profileBlock.style.borderColor = '';
       profileBlock.style.backdropFilter = `blur(${10 * opacity}px)`;
-      skillsBlock.style.background = `rgba(0, 0, 0, ${opacity})`;
-      skillsBlock.style.borderOpacity = opacity;
-      skillsBlock.style.borderColor = '';
-      skillsBlock.style.backdropFilter = `blur(${10 * opacity}px)`;
       profileBlock.style.pointerEvents = 'auto';
       socialIcons.forEach(icon => {
         icon.style.pointerEvents = 'auto';
@@ -352,122 +291,6 @@ document.addEventListener('DOMContentLoaded', () => {
       profileBio.style.opacity = '1';
       visitorCount.style.opacity = '1';
     }
-  });
-
-
-  function switchTheme(videoSrc, audio, themeClass, overlay = null, overlayOverProfile = false) {
-    let primaryColor;
-    switch (themeClass) {
-      case 'home-theme':
-        primaryColor = '#00CED1';
-        break;
-      case 'hacker-theme':
-        primaryColor = '#22C55E';
-        break;
-      case 'rain-theme':
-        primaryColor = '#1E3A8A';
-        break;
-      case 'anime-theme':
-        primaryColor = '#DC2626';
-        break;
-      case 'car-theme':
-        primaryColor = '#EAB308';
-        break;
-      default:
-        primaryColor = '#00CED1';
-    }
-    document.documentElement.style.setProperty('--primary-color', primaryColor);
-
-    gsap.to(backgroundVideo, {
-      opacity: 0,
-      duration: 0.5,
-      ease: 'power2.in',
-      onComplete: () => {
-        backgroundVideo.src = videoSrc;
-
-        if (currentAudio) {
-          currentAudio.pause();
-          currentAudio.currentTime = 0;
-        }
-        currentAudio = audio;
-        currentAudio.volume = volumeSlider.value;
-        currentAudio.muted = isMuted;
-        currentAudio.play().catch(err => console.error("Failed to play theme music:", err));
-
-        document.body.classList.remove('home-theme', 'hacker-theme', 'rain-theme', 'anime-theme', 'car-theme');
-        document.body.classList.add(themeClass);
-
-        hackerOverlay.classList.add('hidden');
-        snowOverlay.classList.add('hidden');
-        profileBlock.style.zIndex = overlayOverProfile ? 10 : 20;
-        skillsBlock.style.zIndex = overlayOverProfile ? 10 : 20;
-        if (overlay) {
-          overlay.classList.remove('hidden');
-        }
-
-        if (themeClass === 'hacker-theme') {
-          resultsButtonContainer.classList.remove('hidden');
-        } else {
-          resultsButtonContainer.classList.add('hidden');
-          skillsBlock.classList.add('hidden');
-          resultsHint.classList.add('hidden');
-          profileBlock.classList.remove('hidden');
-          gsap.to(profileBlock, { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' });
-        }
-
-        gsap.to(backgroundVideo, {
-          opacity: 1,
-          duration: 0.5,
-          ease: 'power2.out',
-          onComplete: () => {
-            profileContainer.classList.remove('orbit');
-            void profileContainer.offsetWidth;
-            profileContainer.classList.add('orbit');
-          }
-        });
-      }
-    });
-  }
-
-
-  homeButton.addEventListener('click', () => {
-    switchTheme('assets/background.mp4', backgroundMusic, 'home-theme');
-  });
-  homeButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/background.mp4', backgroundMusic, 'home-theme');
-  });
-
-  hackerButton.addEventListener('click', () => {
-    switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
-  });
-  hackerButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/hacker_background.mp4', hackerMusic, 'hacker-theme', hackerOverlay, false);
-  });
-
-  rainButton.addEventListener('click', () => {
-    switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
-  });
-  rainButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/rain_background.mov', rainMusic, 'rain-theme', snowOverlay, true);
-  });
-
-  animeButton.addEventListener('click', () => {
-    switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
-  });
-  animeButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/anime_background.mp4', animeMusic, 'anime-theme');
-  });
-
-  carButton.addEventListener('click', () => {
-    switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
-  });
-  carButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    switchTheme('assets/car_background.mp4', carMusic, 'car-theme');
   });
 
  
@@ -507,12 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     handleTilt(e, profileBlock);
   });
 
-  skillsBlock.addEventListener('mousemove', (e) => handleTilt(e, skillsBlock));
-  skillsBlock.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    handleTilt(e, skillsBlock);
-  });
-
   profileBlock.addEventListener('mouseleave', () => {
     gsap.to(profileBlock, {
       rotationX: 0,
@@ -523,23 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   profileBlock.addEventListener('touchend', () => {
     gsap.to(profileBlock, {
-      rotationX: 0,
-      rotationY: 0,
-      duration: 0.5,
-      ease: 'power2.out'
-    });
-  });
-
-  skillsBlock.addEventListener('mouseleave', () => {
-    gsap.to(skillsBlock, {
-      rotationX: 0,
-      rotationY: 0,
-      duration: 0.5,
-      ease: 'power2.out'
-    });
-  });
-  skillsBlock.addEventListener('touchend', () => {
-    gsap.to(skillsBlock, {
       rotationX: 0,
       rotationY: 0,
       duration: 0.5,
@@ -580,92 +380,6 @@ document.addEventListener('DOMContentLoaded', () => {
       profileContainer.classList.add('orbit');
     }, 500);
   });
-
- 
-  let isShowingSkills = false;
-  resultsButton.addEventListener('click', () => {
-    if (!isShowingSkills) {
-      gsap.to(profileBlock, {
-        x: -100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          profileBlock.classList.add('hidden');
-          skillsBlock.classList.remove('hidden');
-          gsap.fromTo(skillsBlock,
-            { x: 100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-          gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
-          gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
-          gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
-        }
-      });
-      resultsHint.classList.remove('hidden');
-      isShowingSkills = true;
-    } else {
-      gsap.to(skillsBlock, {
-        x: 100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          skillsBlock.classList.add('hidden');
-          profileBlock.classList.remove('hidden');
-          gsap.fromTo(profileBlock,
-            { x: -100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-        }
-      });
-      resultsHint.classList.add('hidden');
-      isShowingSkills = false;
-    }
-  });
-
-  resultsButton.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    if (!isShowingSkills) {
-      gsap.to(profileBlock, {
-        x: -100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          profileBlock.classList.add('hidden');
-          skillsBlock.classList.remove('hidden');
-          gsap.fromTo(skillsBlock,
-            { x: 100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-          gsap.to(pythonBar, { width: '87%', duration: 2, ease: 'power2.out' });
-          gsap.to(cppBar, { width: '75%', duration: 2, ease: 'power2.out' });
-          gsap.to(csharpBar, { width: '80%', duration: 2, ease: 'power2.out' });
-        }
-      });
-      resultsHint.classList.remove('hidden');
-      isShowingSkills = true;
-    } else {
-      gsap.to(skillsBlock, {
-        x: 100,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.in',
-        onComplete: () => {
-          skillsBlock.classList.add('hidden');
-          profileBlock.classList.remove('hidden');
-          gsap.fromTo(profileBlock,
-            { x: -100, opacity: 0 },
-            { x: 0, opacity: 1, duration: 0.5, ease: 'power2.out' }
-          );
-        }
-      });
-      resultsHint.classList.add('hidden');
-      isShowingSkills = false;
-    }
-  });
-
 
   typeWriterStart();
 });
