@@ -1,11 +1,28 @@
-import { kv } from '@vercel/kv';
+import Redis from 'ioredis';
+
+const redis = new Redis(process.env.REDIS_URL);
 
 export default async function handler(request, response) {
   try {
-    const count = await kv.incr('views');
-    response.setHeader('Access-Control-Allow-Origin', '*');
-    return response.status(200).json({ count });
+    if (request.method === 'POST') {
+      const { slug } = request.body;
+      if (!slug) {
+        return response.status(400).json({ error: 'Slug is required' });
+      }
+      await redis.incr(slug);
+      return response.status(200).json({ message: 'Counter incremented' });
+    } else if (request.method === 'GET') {
+      const { slug } = request.query;
+      if (!slug) {
+        return response.status(400).json({ error: 'Slug is required' });
+      }
+      const count = await redis.get(slug);
+      return response.status(200).json({ count: parseInt(count || 0, 10) });
+    } else {
+      return response.status(405).json({ error: 'Method not allowed' });
+    }
   } catch (error) {
-    return response.status(500).json({ error: error.message });
+    console.error('Redis error:', error);
+    return response.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 }
