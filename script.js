@@ -4,7 +4,7 @@ const audioFiles = [
   '14-system-music-daily-log-tv.ogg',
   '35-eshop-menu-track-10.ogg',
   '49-mii-maker-editing-a-mii-gamepad.ogg',
-  'same-smile-different-face-real-version-knower.ogg',
+  'same-smile-different-face-knower.ogg',
   'spark-the-bird-and-the-bee.ogg'
 ];
 
@@ -171,6 +171,9 @@ document.addEventListener('DOMContentLoaded', () => {
   startScreen.addEventListener('click', () => {
     startScreen.classList.add('hidden');
     backgroundMusic.muted = false;
+    backgroundMusic.play().catch(err => {
+      console.error("Failed to play initial music after start screen click:", err);
+    });
     playNextAudio(); // Start playing audio after user interaction
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
@@ -188,6 +191,9 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     startScreen.classList.add('hidden');
     backgroundMusic.muted = false;
+    backgroundMusic.play().catch(err => {
+      console.error("Failed to play initial music after start screen touch:", err);
+    });
     playNextAudio(); // Start playing audio after user interaction
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
