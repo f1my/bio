@@ -4,7 +4,7 @@ const audioFiles = [
   '14-system-music-daily-log-tv.ogg',
   '35-eshop-menu-track-10.ogg',
   '49-mii-maker-editing-a-mii-gamepad.ogg',
-  'same-smile-different-face-knower.ogg',
+  'same-smile-different-face-real-version-knower.ogg',
   'spark-the-bird-and-the-bee.ogg'
 ];
 
