@@ -179,8 +179,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play only when enough data is buffered to play through
     backgroundMusic.addEventListener('canplaythrough', function handler() {
-        backgroundMusic.play().catch(err => {
-            console.error("Failed to play initial music after canplaythrough:", err);
+        console.log('Audio canplaythrough event fired for click.');
+        backgroundMusic.play().then(() => {
+            console.log('Audio play() promise resolved successfully for click.');
+        }).catch(err => {
+            console.error("Failed to play initial music after canplaythrough (click):", err);
         });
         backgroundMusic.removeEventListener('canplaythrough', handler);
     });
@@ -212,8 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Play only when enough data is buffered to play through
     backgroundMusic.addEventListener('canplaythrough', function handler() {
-        backgroundMusic.play().catch(err => {
-            console.error("Failed to play initial music after canplaythrough:", err);
+        console.log('Audio canplaythrough event fired for touch.');
+        backgroundMusic.play().then(() => {
+            console.log('Audio play() promise resolved successfully for touch.');
+        }).catch(err => {
+            console.error("Failed to play initial music after canplaythrough (touch):", err);
         });
         backgroundMusic.removeEventListener('canplaythrough', handler);
     });
