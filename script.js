@@ -1,5 +1,37 @@
 let hasUserInteracted = false;
 
+const audioFiles = [
+  'assets/System Music - Daily Log (TV).mp3',
+  'assets/eShop - Menu (Track 10).mp3',
+  'assets/Mii Maker - Editing a Mii (Gamepad).mp3',
+  'assets/spotidownloader.com - Same Smile, Different Face (real version) - KNOWER.mp3',
+  'assets/spotidownloader.com - Spark - the bird and the bee.mp3'
+];
+
+let shuffledAudioFiles = [];
+let currentAudioIndex = 0;
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function playNextAudio() {
+  if (currentAudioIndex >= shuffledAudioFiles.length) {
+    shuffledAudioFiles = shuffleArray([...audioFiles]); // Reshuffle when all played
+    currentAudioIndex = 0;
+  }
+  const backgroundMusic = document.getElementById('background-music');
+  backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
+  backgroundMusic.play().catch(err => {
+    console.error("Failed to play next audio:", err);
+  });
+  currentAudioIndex++;
+}
+
 function initMedia() {
   console.log("initMedia called");
   const backgroundMusic = document.getElementById('background-music');
@@ -9,9 +41,13 @@ function initMedia() {
     return;
   }
   backgroundMusic.volume = 0.3;
-  backgroundVideo.muted = true; 
+  backgroundVideo.muted = true;
 
-  
+  shuffledAudioFiles = shuffleArray([...audioFiles]); // Initial shuffle
+  playNextAudio(); // Play the first random audio
+
+  backgroundMusic.addEventListener('ended', playNextAudio);
+
   backgroundVideo.play().catch(err => {
     console.error("Failed to play background video:", err);
   });
