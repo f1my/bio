@@ -27,7 +27,6 @@ function playNextAudio() {
   const backgroundMusic = document.getElementById('background-music');
   backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
   backgroundMusic.load(); // Load the new audio source
-  backgroundMusic.play().catch(err => console.error("Failed to play next audio:", err));
   currentAudioIndex++;
 }
 
@@ -53,7 +52,6 @@ function initMedia() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  initMedia(); // Initialize media when the DOM is ready
   const startScreen = document.getElementById('start-screen');
   const startText = document.getElementById('start-text');
   const profileName = document.getElementById('profile-name');
@@ -167,35 +165,25 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeVisitorCounter();
 
 
-  const startScreen = document.getElementById('start-screen');
-
-  let hasInteracted = false;
-  function handleStartInteraction() {
-    if (hasInteracted) return;
-    hasInteracted = true;
-
-    console.log('User interaction detected');
+  startScreen.addEventListener('click', () => {
     startScreen.classList.add('hidden');
     const backgroundMusic = document.getElementById('background-music');
-    
-    backgroundMusic.muted = false;
+    backgroundMusic.muted = false; // Ensure it's unmuted
 
+    // Set src and load the first audio directly
     if (shuffledAudioFiles.length === 0) {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
-    
     backgroundMusic.src = shuffledAudioFiles[0];
-    
-    const playPromise = backgroundMusic.play();
+    backgroundMusic.load();
 
-    if (playPromise !== undefined) {
-        playPromise.then(() => {
-            console.log('Audio playback started successfully!');
-            currentAudioIndex = 1;
-        }).catch(error => {
-            console.error('Failed to play audio:', error);
-        });
-    }
+    // Attempt to play immediately
+    backgroundMusic.play().then(() => {
+        console.log('Audio play() promise resolved successfully for click.');
+        currentAudioIndex = 1; // First audio played, next will be index 1
+    }).catch(err => {
+        console.error("Failed to play initial music (click):", err);
+    });
 
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
@@ -207,9 +195,40 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     typeWriterName();
     typeWriterBio();
-  }
+  });
 
-  startScreen.addEventListener('click', handleStartInteraction);
+  startScreen.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    startScreen.classList.add('hidden');
+    const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.muted = false; // Ensure it's unmuted
+
+    // Set src and load the first audio directly
+    if (shuffledAudioFiles.length === 0) {
+        shuffledAudioFiles = shuffleArray([...audioFiles]);
+    }
+    backgroundMusic.src = shuffledAudioFiles[0];
+    backgroundMusic.load();
+
+    // Attempt to play immediately
+    backgroundMusic.play().then(() => {
+        console.log('Audio play() promise resolved successfully for touch.');
+        currentAudioIndex = 1; // First audio played, next will be index 1
+    }).catch(err => {
+        console.error("Failed to play initial music (touch):", err);
+    });
+
+    profileBlock.classList.remove('hidden');
+    gsap.fromTo(profileBlock,
+      { opacity: 0, y: -50 },
+      { opacity: 1, y: 0, duration: 1, ease: 'power2.out', onComplete: () => {
+        profileBlock.classList.add('profile-appear');
+        profileContainer.classList.add('orbit');
+      }}
+    );
+    typeWriterName();
+    typeWriterBio();
+  });
 
 
   const name = "Floomy";
