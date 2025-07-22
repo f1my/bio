@@ -53,6 +53,7 @@ function initMedia() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initMedia(); // Initialize media when the DOM is ready
   const startScreen = document.getElementById('start-screen');
   const startText = document.getElementById('start-text');
   const profileName = document.getElementById('profile-name');
@@ -166,26 +167,50 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeVisitorCounter();
 
 
-  startScreen.addEventListener('click', () => {
+  let hasInteracted = false;
+  function handleStartInteraction(event) {
+    // Prevent this function from running more than once
+    if (hasInteracted) return;
+    hasInteracted = true;
+
+    // For touch events, prevent the default action to avoid potential double-firing of events
+    event.preventDefault();
+
+    console.log('User interaction detected:', event.type);
     startScreen.classList.add('hidden');
     const backgroundMusic = document.getElementById('background-music');
-    backgroundMusic.muted = false; // Ensure it's unmuted
+    
+    console.log('Audio state before play:', {
+        src: backgroundMusic.src,
+        muted: backgroundMusic.muted,
+        volume: backgroundMusic.volume,
+        paused: backgroundMusic.paused,
+        readyState: backgroundMusic.readyState
+    });
 
-    // Set src and load the first audio directly
+    backgroundMusic.muted = false;
+
     if (shuffledAudioFiles.length === 0) {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
+    
     backgroundMusic.src = shuffledAudioFiles[0];
-    backgroundMusic.load();
+    console.log('Setting audio src to:', backgroundMusic.src);
+    
+    // The play() method returns a promise.
+    const playPromise = backgroundMusic.play();
 
-    // Attempt to play immediately
-    backgroundMusic.play().then(() => {
-        console.log('Audio play() promise resolved successfully for click.');
-        currentAudioIndex = 1; // First audio played, next will be index 1
-    }).catch(err => {
-        console.error("Failed to play initial music (click):", err);
-    });
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log('Audio playback started successfully!');
+            currentAudioIndex = 1; // Set index for the next song
+        }).catch(error => {
+            console.error('Failed to play audio:', error);
+            // We can add a fallback here if needed, e.g., show a "Tap to unmute" button.
+        });
+    }
 
+    // Make the profile block visible
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
       { opacity: 0, y: -50 },
@@ -196,7 +221,11 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     typeWriterName();
     typeWriterBio();
-  });
+  }
+
+  // Attach the event listener for both click and touchstart
+  startScreen.addEventListener('click', handleStartInteraction);
+  startScreen.addEventListener('touchstart', handleStartInteraction);
 
 
   const name = "Floomy";
