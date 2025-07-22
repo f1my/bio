@@ -210,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   startScreen.addEventListener('click', handleStartInteraction);
+  startScreen.addEventListener('touchstart', handleStartInteraction);
 
 
   const name = "Floomy";
