@@ -167,27 +167,17 @@ document.addEventListener('DOMContentLoaded', () => {
   initializeVisitorCounter();
 
 
+  const startScreen = document.getElementById('start-screen');
+
   let hasInteracted = false;
-  function handleStartInteraction(event) {
-    // Prevent this function from running more than once
+  function handleStartInteraction() {
     if (hasInteracted) return;
     hasInteracted = true;
 
-    // For touch events, prevent the default action to avoid potential double-firing of events
-    event.preventDefault();
-
-    console.log('User interaction detected:', event.type);
+    console.log('User interaction detected');
     startScreen.classList.add('hidden');
     const backgroundMusic = document.getElementById('background-music');
     
-    console.log('Audio state before play:', {
-        src: backgroundMusic.src,
-        muted: backgroundMusic.muted,
-        volume: backgroundMusic.volume,
-        paused: backgroundMusic.paused,
-        readyState: backgroundMusic.readyState
-    });
-
     backgroundMusic.muted = false;
 
     if (shuffledAudioFiles.length === 0) {
@@ -195,22 +185,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     backgroundMusic.src = shuffledAudioFiles[0];
-    console.log('Setting audio src to:', backgroundMusic.src);
     
-    // The play() method returns a promise.
     const playPromise = backgroundMusic.play();
 
     if (playPromise !== undefined) {
         playPromise.then(() => {
             console.log('Audio playback started successfully!');
-            currentAudioIndex = 1; // Set index for the next song
+            currentAudioIndex = 1;
         }).catch(error => {
             console.error('Failed to play audio:', error);
-            // We can add a fallback here if needed, e.g., show a "Tap to unmute" button.
         });
     }
 
-    // Make the profile block visible
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
       { opacity: 0, y: -50 },
@@ -223,9 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
     typeWriterBio();
   }
 
-  // Attach the event listener for both click and touchstart
   startScreen.addEventListener('click', handleStartInteraction);
-  startScreen.addEventListener('touchstart', handleStartInteraction);
 
 
   const name = "Floomy";
