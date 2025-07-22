@@ -520,13 +520,23 @@
 
         
 
-        
+        @font-face {
+
+            font-family: 'Angel Wish';
+
+            src: url('assets/Angel_wish.ttf') format('truetype');
+
+            font-weight: normal;
+
+            font-style: normal;
+
+        }
 
 
 
         #profile-name {
 
-            font-family: 'Courier New', monospace;
+            font-family: 'Angel Wish', sans-serif;
 
             font-size: 32px;
 
@@ -1676,7 +1686,7 @@
 
 </head>
 
-<body class="home-theme">
+<body class="home-theme" onload="initMedia()">
 
     
 
@@ -1686,11 +1696,11 @@
 
     
 
-    <button id="start-screen">
+    <div id="start-screen">
 
         <div id="start-text"></div>
 
-    </button>
+    </div>
 
 
 
@@ -1897,9 +1907,9 @@
 
 
 
-    <audio id="background-music"></audio>
+    <audio id="background-music" loop></audio>
 
-    <!-- <audio id="hacker-music" loop muted>
+    <audio id="hacker-music" loop muted>
 
         <source src="assets/hacker_music.mp3" type="audio/mp3">
 
@@ -1921,7 +1931,7 @@
 
         <source src="assets/car_music.mp3" type="audio/mp3">
 
-    </audio> -->
+    </audio>
 
 
 
