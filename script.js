@@ -47,9 +47,9 @@ function initMedia() {
 
   backgroundMusic.addEventListener('ended', playNextAudio);
 
-  backgroundVideo.play().catch(err => {
-    console.error("Failed to play background video:", err);
-  });
+  // backgroundVideo.play().catch(err => {
+  //   console.error("Failed to play background video:", err);
+  // });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
