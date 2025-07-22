@@ -27,6 +27,7 @@ function playNextAudio() {
   const backgroundMusic = document.getElementById('background-music');
   backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
   backgroundMusic.load(); // Load the new audio source
+  backgroundMusic.play().catch(err => console.error("Failed to play next audio:", err));
   currentAudioIndex++;
 }
 
@@ -183,39 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentAudioIndex = 1; // First audio played, next will be index 1
     }).catch(err => {
         console.error("Failed to play initial music (click):", err);
-    });
-
-    profileBlock.classList.remove('hidden');
-    gsap.fromTo(profileBlock,
-      { opacity: 0, y: -50 },
-      { opacity: 1, y: 0, duration: 1, ease: 'power2.out', onComplete: () => {
-        profileBlock.classList.add('profile-appear');
-        profileContainer.classList.add('orbit');
-      }}
-    );
-    typeWriterName();
-    typeWriterBio();
-  });
-
-  startScreen.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    startScreen.classList.add('hidden');
-    const backgroundMusic = document.getElementById('background-music');
-    backgroundMusic.muted = false; // Ensure it's unmuted
-
-    // Set src and load the first audio directly
-    if (shuffledAudioFiles.length === 0) {
-        shuffledAudioFiles = shuffleArray([...audioFiles]);
-    }
-    backgroundMusic.src = shuffledAudioFiles[0];
-    backgroundMusic.load();
-
-    // Attempt to play immediately
-    backgroundMusic.play().then(() => {
-        console.log('Audio play() promise resolved successfully for touch.');
-        currentAudioIndex = 1; // First audio played, next will be index 1
-    }).catch(err => {
-        console.error("Failed to play initial music (touch):", err);
     });
 
     profileBlock.classList.remove('hidden');
