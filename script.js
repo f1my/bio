@@ -168,9 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeVisitorCounter();
 
-
-  const startScreen = document.getElementById('start-screen');
-
   let hasInteracted = false;
   function handleStartInteraction() {
     if (hasInteracted) return;
