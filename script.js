@@ -27,6 +27,7 @@ function playNextAudio() {
   const backgroundMusic = document.getElementById('background-music');
   backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
   backgroundMusic.load(); // Load the new audio source
+  backgroundMusic.play().catch(err => console.error("Failed to play next audio:", err));
   currentAudioIndex++;
 }
 
@@ -43,15 +44,18 @@ function initMedia() {
 
   // Initial shuffle, but do NOT play audio here, wait for user interaction
   shuffledAudioFiles = shuffleArray([...audioFiles]);
+  backgroundMusic.src = shuffledAudioFiles[0]; // Set initial audio source
+  backgroundMusic.load(); // Pre-load the audio
 
   backgroundMusic.addEventListener('ended', playNextAudio);
 
-  backgroundVideo.play().catch(err => {
-    console.error("Failed to play background video:", err);
-  });
+  // backgroundVideo.play().catch(err => {
+  //   console.error("Failed to play background video:", err);
+  // });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initMedia(); // Initialize media when the DOM is ready
   const startScreen = document.getElementById('start-screen');
   const startText = document.getElementById('start-text');
   const profileName = document.getElementById('profile-name');
@@ -164,26 +168,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeVisitorCounter();
 
+  let hasInteracted = false;
+  function handleStartInteraction() {
+    if (hasInteracted) return;
+    hasInteracted = true;
 
-  startScreen.addEventListener('click', () => {
+    console.log('User interaction detected');
     startScreen.classList.add('hidden');
     const backgroundMusic = document.getElementById('background-music');
-    backgroundMusic.muted = false; // Ensure it's unmuted
+    
+    backgroundMusic.muted = false;
 
-    // Set src and load the first audio directly
     if (shuffledAudioFiles.length === 0) {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
-    backgroundMusic.src = shuffledAudioFiles[0];
-    backgroundMusic.load();
+    
+    // backgroundMusic.src = shuffledAudioFiles[0]; // Source is already set in initMedia
+    
+    const playPromise = backgroundMusic.play();
 
-    // Attempt to play immediately
-    backgroundMusic.play().then(() => {
-        console.log('Audio play() promise resolved successfully for click.');
-        currentAudioIndex = 1; // First audio played, next will be index 1
-    }).catch(err => {
-        console.error("Failed to play initial music (click):", err);
-    });
+    if (playPromise !== undefined) {
+        playPromise.then(() => {
+            console.log('Audio playback started successfully!');
+            currentAudioIndex = 1;
+        }).catch(error => {
+            console.error('Failed to play audio:', error);
+        });
+    }
 
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
@@ -195,40 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     typeWriterName();
     typeWriterBio();
-  });
+  }
 
-  startScreen.addEventListener('touchstart', (e) => {
-    e.preventDefault();
-    startScreen.classList.add('hidden');
-    const backgroundMusic = document.getElementById('background-music');
-    backgroundMusic.muted = false; // Ensure it's unmuted
-
-    // Set src and load the first audio directly
-    if (shuffledAudioFiles.length === 0) {
-        shuffledAudioFiles = shuffleArray([...audioFiles]);
-    }
-    backgroundMusic.src = shuffledAudioFiles[0];
-    backgroundMusic.load();
-
-    // Attempt to play immediately
-    backgroundMusic.play().then(() => {
-        console.log('Audio play() promise resolved successfully for touch.');
-        currentAudioIndex = 1; // First audio played, next will be index 1
-    }).catch(err => {
-        console.error("Failed to play initial music (touch):", err);
-    });
-
-    profileBlock.classList.remove('hidden');
-    gsap.fromTo(profileBlock,
-      { opacity: 0, y: -50 },
-      { opacity: 1, y: 0, duration: 1, ease: 'power2.out', onComplete: () => {
-        profileBlock.classList.add('profile-appear');
-        profileContainer.classList.add('orbit');
-      }}
-    );
-    typeWriterName();
-    typeWriterBio();
-  });
+  startScreen.addEventListener('click', handleStartInteraction);
+  startScreen.addEventListener('touchstart', handleStartInteraction);
 
 
   const name = "Floomy";
