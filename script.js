@@ -44,6 +44,7 @@ function initMedia() {
 
   // Initial shuffle, but do NOT play audio here, wait for user interaction
   shuffledAudioFiles = shuffleArray([...audioFiles]);
+  backgroundMusic.src = shuffledAudioFiles[0]; // Set initial audio source
 
   backgroundMusic.addEventListener('ended', playNextAudio);
 
@@ -184,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
     
-    backgroundMusic.src = shuffledAudioFiles[0];
+    // backgroundMusic.src = shuffledAudioFiles[0]; // Source is already set in initMedia
     
     const playPromise = backgroundMusic.play();
 
