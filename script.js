@@ -44,14 +44,12 @@ function initMedia() {
 
   // Initial shuffle, but do NOT play audio here, wait for user interaction
   shuffledAudioFiles = shuffleArray([...audioFiles]);
-  backgroundMusic.src = shuffledAudioFiles[0]; // Set initial audio source
-  backgroundMusic.load(); // Pre-load the audio
 
   backgroundMusic.addEventListener('ended', playNextAudio);
 
-  // backgroundVideo.play().catch(err => {
-  //   console.error("Failed to play background video:", err);
-  // });
+  backgroundVideo.play().catch(err => {
+    console.error("Failed to play background video:", err);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -168,6 +166,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeVisitorCounter();
 
+
+  const startScreen = document.getElementById('start-screen');
+
   let hasInteracted = false;
   function handleStartInteraction() {
     if (hasInteracted) return;
@@ -183,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
         shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
     
-    // backgroundMusic.src = shuffledAudioFiles[0]; // Source is already set in initMedia
+    backgroundMusic.src = shuffledAudioFiles[0];
     
     const playPromise = backgroundMusic.play();
 
@@ -209,7 +210,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   startScreen.addEventListener('click', handleStartInteraction);
-  startScreen.addEventListener('touchstart', handleStartInteraction);
 
 
   const name = "Floomy";
