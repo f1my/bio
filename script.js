@@ -167,13 +167,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeVisitorCounter();
 
+  const startScreen = document.getElementById('start-screen');
   let hasInteracted = false;
   function handleStartInteraction() {
     if (hasInteracted) return;
     hasInteracted = true;
 
     console.log('User interaction detected');
-    const startScreen = document.getElementById('start-screen');
     startScreen.classList.add('hidden');
     const backgroundMusic = document.getElementById('background-music');
     
@@ -208,7 +208,6 @@ document.addEventListener('DOMContentLoaded', () => {
     typeWriterBio();
   }
 
-  const startScreen = document.getElementById('start-screen');
   startScreen.addEventListener('click', handleStartInteraction);
   startScreen.addEventListener('touchstart', handleStartInteraction);
 
