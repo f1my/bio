@@ -45,6 +45,7 @@ function initMedia() {
   // Initial shuffle, but do NOT play audio here, wait for user interaction
   shuffledAudioFiles = shuffleArray([...audioFiles]);
   backgroundMusic.src = shuffledAudioFiles[0]; // Set initial audio source
+  backgroundMusic.load(); // Pre-load the audio
 
   backgroundMusic.addEventListener('ended', playNextAudio);
 
