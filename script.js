@@ -56,8 +56,6 @@ function initMedia() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initMedia(); // Initialize media when the DOM is ready
-  initMedia(); // Initialize media when the DOM is ready
-  const startScreen = document.getElementById('start-screen');
   const startText = document.getElementById('start-text');
   const profileName = document.getElementById('profile-name');
   const profileBio = document.getElementById('profile-bio');
@@ -175,6 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     hasInteracted = true;
 
     console.log('User interaction detected');
+    const startScreen = document.getElementById('start-screen');
     startScreen.classList.add('hidden');
     const backgroundMusic = document.getElementById('background-music');
     
@@ -209,6 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
     typeWriterBio();
   }
 
+  const startScreen = document.getElementById('start-screen');
   startScreen.addEventListener('click', handleStartInteraction);
   startScreen.addEventListener('touchstart', handleStartInteraction);
 
