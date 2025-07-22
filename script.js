@@ -56,6 +56,7 @@ function initMedia() {
 
 document.addEventListener('DOMContentLoaded', () => {
   initMedia(); // Initialize media when the DOM is ready
+  const startScreen = document.getElementById('start-screen');
   const startText = document.getElementById('start-text');
   const profileName = document.getElementById('profile-name');
   const profileBio = document.getElementById('profile-bio');
@@ -167,7 +168,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeVisitorCounter();
 
-  const startScreen = document.getElementById('start-screen');
   let hasInteracted = false;
   function handleStartInteraction() {
     if (hasInteracted) return;
