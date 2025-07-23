@@ -1,5 +1,7 @@
 let hasUserInteracted = false;
 
+let audioContext;
+
 const audioFiles = [
   '14-system-music-daily-log-tv.ogg',
   '35-eshop-menu-track-10.ogg',
@@ -8,7 +10,8 @@ const audioFiles = [
   'spark-the-bird-and-the-bee.ogg'
 ];
 
-let shuffledAudioFiles = [];
+let audioBuffers = {};
+let shuffledAudioKeys = [];
 let currentAudioIndex = 0;
 
 function shuffleArray(array) {
@@ -20,34 +23,59 @@ function shuffleArray(array) {
 }
 
 function playNextAudio() {
-  if (currentAudioIndex >= shuffledAudioFiles.length) {
-    shuffledAudioFiles = shuffleArray([...audioFiles]); // Reshuffle when all played
+  if (currentAudioIndex >= shuffledAudioKeys.length) {
+    shuffledAudioKeys = shuffleArray([...audioFiles]); // Reshuffle when all played
     currentAudioIndex = 0;
   }
-  const backgroundMusic = document.getElementById('background-music');
-  backgroundMusic.src = shuffledAudioFiles[currentAudioIndex];
-  backgroundMusic.load(); // Load the new audio source
-  backgroundMusic.play().catch(err => console.error("Failed to play next audio:", err));
+
+  const currentAudioKey = shuffledAudioKeys[currentAudioIndex];
+  const audioBuffer = audioBuffers[currentAudioKey];
+
+  if (!audioBuffer) {
+    console.error(`Audio buffer not found for ${currentAudioKey}`);
+    return;
+  }
+
+  const source = audioContext.createBufferSource();
+  source.buffer = audioBuffer;
+
+  const gainNode = audioContext.createGain();
+  gainNode.gain.value = document.getElementById('volume-slider').value; // Set initial volume from slider
+  source.connect(gainNode);
+  gainNode.connect(audioContext.destination);
+
+  currentGainNode = gainNode; // Store the current gain node
+
+  source.start(0);
+  source.onended = playNextAudio; // Play next when current ends
+
   currentAudioIndex++;
 }
 
-function initMedia() {
-  console.log("initMedia called");
-  const backgroundMusic = document.getElementById('background-music');
+  function initMedia() {
+    console.log("initMedia called");
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
   const backgroundVideo = document.getElementById('background');
-  if (!backgroundMusic || !backgroundVideo) {
+  if (!backgroundVideo) {
     console.error("Media elements not found");
     return;
   }
-  backgroundMusic.volume = 0.3;
   backgroundVideo.muted = true;
-
-  // Initial shuffle, but do NOT play audio here, wait for user interaction
-  shuffledAudioFiles = shuffleArray([...audioFiles]);
-  backgroundMusic.src = shuffledAudioFiles[0]; // Set initial audio source
-  backgroundMusic.load(); // Pre-load the audio
-
-  backgroundMusic.addEventListener('ended', playNextAudio);
+  // Load all audio files into AudioBuffers
+  Promise.all(audioFiles.map(file =>
+    fetch(file)
+      .then(response => response.arrayBuffer())
+      .then(arrayBuffer => audioContext.decodeAudioData(arrayBuffer))
+      .then(audioBuffer => {
+        audioBuffers[file] = audioBuffer;
+        console.log(`Loaded audio: ${file}`);
+      })
+  )).then(() => {
+    shuffledAudioKeys = shuffleArray([...audioFiles]);
+    console.log('All audio files loaded and shuffled.');
+  }).catch(error => {
+    console.error('Error loading audio files:', error);
+  });
 
   // backgroundVideo.play().catch(err => {
   //   console.error("Failed to play background video:", err);
@@ -61,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileName = document.getElementById('profile-name');
   const profileBio = document.getElementById('profile-bio');
   const visitorCount = document.getElementById('visitor-count');
-  const backgroundMusic = document.getElementById('background-music');
   const volumeIcon = document.getElementById('volume-icon');
   const volumeSlider = document.getElementById('volume-slider');
   const transparencySlider = document.getElementById('transparency-slider');
@@ -168,33 +195,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initializeVisitorCounter();
 
-  let hasInteracted = false;
   function handleStartInteraction() {
-    if (hasInteracted) return;
-    hasInteracted = true;
+    if (hasUserInteracted) return;
+    hasUserInteracted = true;
 
-    console.log('User interaction detected');
-    startScreen.classList.add('hidden');
-    const backgroundMusic = document.getElementById('background-music');
     
-    backgroundMusic.muted = false;
-
-    if (shuffledAudioFiles.length === 0) {
-        shuffledAudioFiles = shuffleArray([...audioFiles]);
-    }
     
-    // backgroundMusic.src = shuffledAudioFiles[0]; // Source is already set in initMedia
-    
-    const playPromise = backgroundMusic.play();
-
-    if (playPromise !== undefined) {
-        playPromise.then(() => {
-            console.log('Audio playback started successfully!');
-            currentAudioIndex = 1;
-        }).catch(error => {
-            console.error('Failed to play audio:', error);
-        });
-    }
 
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
@@ -285,12 +291,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }, 500);
 
 
-  let currentAudio = backgroundMusic;
+  let currentGainNode;
   let isMuted = false;
 
   volumeIcon.addEventListener('click', () => {
     isMuted = !isMuted;
-    currentAudio.muted = isMuted;
+    if (currentGainNode) {
+      currentGainNode.gain.value = isMuted ? 0 : volumeSlider.value;
+    }
     volumeIcon.innerHTML = isMuted
       ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
       : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
@@ -299,16 +307,19 @@ document.addEventListener('DOMContentLoaded', () => {
   volumeIcon.addEventListener('touchstart', (e) => {
     e.preventDefault();
     isMuted = !isMuted;
-    currentAudio.muted = isMuted;
+    if (currentGainNode) {
+      currentGainNode.gain.value = isMuted ? 0 : volumeSlider.value;
+    }
     volumeIcon.innerHTML = isMuted
       ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path>`
       : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
   });
 
   volumeSlider.addEventListener('input', () => {
-    currentAudio.volume = volumeSlider.value;
+    if (currentGainNode) {
+      currentGainNode.gain.value = volumeSlider.value;
+    }
     isMuted = false;
-    currentAudio.muted = false;
     volumeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path>`;
   });
 
