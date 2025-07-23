@@ -47,7 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const socialIcons = document.querySelectorAll('.social-icon');
   const badges = document.querySelectorAll('.badge');
 
-  
   const cursor = document.querySelector('.custom-cursor');
   const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
 
@@ -69,10 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.addEventListener('touchend', () => {
-      cursor.style.display = 'none'; 
+      cursor.style.display = 'none';
     });
   } else {
-
     document.addEventListener('mousemove', (e) => {
       cursor.style.left = e.clientX + 'px';
       cursor.style.top = e.clientY + 'px';
@@ -88,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-
   const startMessage = "click for peak";
   let startTextContent = '';
   let startIndex = 0;
@@ -103,42 +100,31 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(typeWriterStart, 100);
   }
 
-
   setInterval(() => {
     startCursorVisible = !startCursorVisible;
     startText.textContent = startTextContent + (startCursorVisible ? '|' : ' ');
   }, 500);
 
-
   function initializeVisitorCounter() {
-    // First, increment the counter
     fetch('/api/counter', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ slug: 'views' }), // Increment the 'views' slug
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: 'views' }),
     })
     .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       return response.json();
     })
-    .then(() => {
-      // After incrementing, fetch the updated count
-      return fetch('/api/counter?slug=views'); // Fetch the 'views' slug
-    })
+    .then(() => fetch('/api/counter?slug=views'))
     .then(response => response.json())
     .then(data => {
       visitorCount.textContent = data.count.toLocaleString();
     })
     .catch(error => {
       console.error('Error updating or fetching visitor count:', error);
-      visitorCount.textContent = 'Error'; // Display error if something goes wrong
+      visitorCount.textContent = 'Error';
     });
   }
-
 
   initializeVisitorCounter();
 
@@ -149,22 +135,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     console.log('User interaction detected');
     startScreen.classList.add('hidden');
-    const backgroundMusic = document.getElementById('background-music');
     
-    backgroundMusic.muted = false;
+    const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.volume = 0.3;
 
     if (shuffledAudioFiles.length === 0) {
-        shuffledAudioFiles = shuffleArray([...audioFiles]);
+      shuffledAudioFiles = shuffleArray([...audioFiles]);
     }
     
-    // backgroundMusic.src = shuffledAudioFiles[0]; // Source is already set in initMedia
+    backgroundMusic.src = shuffledAudioFiles[0];
+    backgroundMusic.load();
     
-    backgroundMusic.play().then(() => {
+    const playPromise = backgroundMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
         console.log('Audio playback started successfully!');
         currentAudioIndex = 1;
-    }).catch(error => {
+        backgroundMusic.addEventListener('ended', playNextAudio);
+      }).catch(error => {
         console.error('Failed to play audio:', error);
-    });
+      });
+    }
 
     profileBlock.classList.remove('hidden');
     gsap.fromTo(profileBlock,
@@ -179,7 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   startScreen.addEventListener('click', handleStartInteraction);
-  startScreen.addEventListener('touchstart', handleStartInteraction);
+  startScreen.addEventListener('touchend', handleStartInteraction);
 
 
   const name = "Floomy";
